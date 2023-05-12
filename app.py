@@ -87,17 +87,13 @@ def transform_bow_fct(desc_text) :
     # lem_w = lemma_fct(lw)    
     transf_desc_text = ' '.join(lw)
     return transf_desc_text
-#    return lw
 
 def process_text(text):
     # mise en forme du texte
     text_prep = transform_bow_fct(text)
-    tt = ""
-    for word in text_prep.split(" "):
-        tt = tt + word + " "
-    text_final = []
-    text_final.append(tt)
-    return text_final
+    text_split = ["".join(word) for word in text_prep.split(" ")]
+    final_text = [np.array(text_split, dtype='<U41')]
+    return text_split, final_text
     
 def fetch_tag(text):
     X_text = vect.transform(text)    
@@ -113,10 +109,10 @@ mlb = load_mlb("./models/mlb.pkl")
 
 input_text = st.text_input('Question')
 
-formatted_text = process_text(input_text)
+formatted_text, final_text = process_text(input_text)
 st.write('Texte mise en forme : ', formatted_text)
 
 if st.button('Rechercher les tags'):
-    y_pred_inversed = fetch_tag(formatted_text) 
+    y_pred_inversed = fetch_tag(final_text) 
     st.write('Tags proposés : ', y_pred_inversed)
     
