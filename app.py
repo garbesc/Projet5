@@ -1,17 +1,15 @@
 # librairies
 import streamlit as st
 import numpy as np
-import pandas as pd
 import re
 import pickle
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.model_selection import train_test_split
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import LinearSVC
-from sklearn.pipeline import Pipeline
-import sklearn.metrics as metrics
-from sklearn.metrics import accuracy_score
+#from sklearn.feature_extraction.text import TfidfVectorizer
+#from sklearn.preprocessing import MultiLabelBinarizer
+#from sklearn.model_selection import train_test_split
+#from sklearn.multiclass import OneVsRestClassifier
+#from sklearn.svm import LinearSVC
+#import sklearn.metrics as metrics
+#from sklearn.metrics import accuracy_score
 
 @st.cache_resource
 def load_clf(add_clf):
@@ -110,9 +108,12 @@ mlb = load_mlb("./models/mlb.pkl")
 input_text = st.text_input('Question')
 
 formatted_text, final_text = process_text(input_text)
-st.write('Texte mise en forme : ', formatted_text)
+st.write('Texte formaté : ', formatted_text)
 
 if st.button('Rechercher les tags'):
     y_pred_inversed = fetch_tag(final_text) 
-    st.write('Tags proposés : ', y_pred_inversed)
+    if y_pred_inversed != "[()]":
+        st.success(y_pred_inversed, icon="✅")
+    else:
+        st.success(y_pred_inversed, icon="🔥")
     
