@@ -110,7 +110,7 @@ def main():
     mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
-    st.image(image, caption='Catégoriser automatiquement une question')
+    st.image(image, caption='Catégoriser automatiquement une question', width=50)
     st.title(":orange[Tag-Me]")
 
     input_text = st.text_input('Poser votre question')
@@ -124,10 +124,12 @@ def main():
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
         st.success(formatted_text)
-        st.success(final_text)
-        y_pred = pipe.predict(final_text)
-        y_pred_inversed = mlb.inverse_transform(y_pred)
-        st.success(y_pred_inversed, icon="✅")
+        if final_text != "[()]":
+            y_pred = pipe.predict(final_text)
+            y_pred_inversed = mlb.inverse_transform(y_pred)
+            st.success(y_pred_inversed, icon="✅")
+        else:
+            st.error('Tags inexistants', icon="🚨")
 
 if __name__ == '__main__':
     main()
