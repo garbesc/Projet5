@@ -17,6 +17,7 @@ nltk.download('omw-1.4')
 nltk.download('wordnet')
 nltk.download('words')
 nltk.download('punkt')
+nltk.download('stopwords')
 
 @st.cache_resource
 # Chargement du Vectorizer 
@@ -60,8 +61,7 @@ def tokenizer_fct(sentence) :
     return word_tokens
 
 # Stop words
-stopwords = nltk.corpus.stopwords.words('english')
-stop_w = list(set(stopwords)) + ['[', ']', ',', '.', ':', '?', '(', ')']
+stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')']
 stop_w.extend(['code', 'quot', 'use', 'http', 'com', 'error', 'work', 'want', 'one', 'would', 'need', 
                    'help', 'also', 'exampl', 'could', 'thing', 'well', 'dear', 'p'])
 
