@@ -15,7 +15,6 @@ from nltk.corpus import words
 
 nltk.download('omw-1.4')
 nltk.download('wordnet')
-nltk.download('stopwords')
 nltk.download('words')
 nltk.download('punkt')
 
@@ -41,9 +40,7 @@ def request_prediction(model_uri, data):
         method='POST', headers=headers, url=model_uri, json=data_json)
 
     if response.status_code != 200:
-        raise Exception(
-            "Request failed with status {}, {}".format(response.status_code, response.text))
-
+        raise Exception("Request failed with status {}, {}".format(response.status_code, response.text))
     return response.json()
 
 # Tokenizer
@@ -63,7 +60,8 @@ def tokenizer_fct(sentence) :
     return word_tokens
 
 # Stop words
-stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')']
+stopwords = nltk.corpus.stopwords.words('english')
+stop_w = list(set(stopwords)) + ['[', ']', ',', '.', ':', '?', '(', ')']
 stop_w.extend(['code', 'quot', 'use', 'http', 'com', 'error', 'work', 'want', 'one', 'would', 'need', 
                    'help', 'also', 'exampl', 'could', 'thing', 'well', 'dear', 'p'])
 
@@ -125,7 +123,7 @@ def main():
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
         y_pred = pipe.predict(final_text)
-        if y_pred != np.zeros((1,100)):
+        if np.sum(y_pred) != 0:
             y_pred_inversed = mlb.inverse_transform(y_pred)
             st.success(y_pred_inversed, icon="✅")
         else:
