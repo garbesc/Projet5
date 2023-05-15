@@ -5,6 +5,17 @@ import re
 import pickle
 import requests
 import json
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize, wordpunct_tokenize
+from nltk.corpus import stopwords
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import words
+
+nltk.download('omw-1.4')
+nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('words')
 
 def request_prediction(model_uri, data):
     headers = {"Content-Type": "application/json"}
