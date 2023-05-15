@@ -1,6 +1,7 @@
 # Librairies
 import streamlit as st
 import numpy as np
+from PIL import Image
 import re
 import pickle
 import requests
@@ -44,10 +45,8 @@ def request_prediction(model_uri, data):
             "Request failed with status {}, {}".format(response.status_code, response.text))
 
     return response.json()
-# Tokenizer
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
 
+# Tokenizer
 def tokenizer_fct(sentence) :
     # print(sentence)
     sentence_clean = sentence.replace('-', ' ').replace('+', ' ').replace('/', ' ').\
@@ -64,7 +63,6 @@ def tokenizer_fct(sentence) :
     return word_tokens
 
 # Stop words
-from nltk.corpus import stopwords
 stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')']
 stop_w.extend(['code', 'quot', 'use', 'http', 'com', 'error', 'work', 'want', 'one', 'would', 'need', 
                    'help', 'also', 'exampl', 'could', 'thing', 'well', 'dear', 'p'])
@@ -82,8 +80,6 @@ def lower_start_fct(list_words) :
     return lw
 
 # Lemmatizer (base d'un mot)
-from nltk.stem import WordNetLemmatizer
-
 def lemma_fct(list_words) :
     lemmatizer = WordNetLemmatizer()
     lem_w = [lemmatizer.lemmatize(w) for w in list_words]
@@ -98,17 +94,12 @@ def transform_bow_fct(desc_text) :
     transf_desc_text = ' '.join(lw)
     return transf_desc_text
 
+# Fonction de mise en forme et nettoyage
 def process_text(text):
-    # mise en forme du texte
     text_prep = transform_bow_fct(text)
     text_split = ["".join(word) for word in text_prep.split(" ")]
     final_text = [np.array(text_split, dtype='<U41')]
     return text_split, final_text
-    
-def fetch_tag(text):
-    y_pred = pipe.predict(X_text)
-    y_pred_inversed = mlb.inverse_transform(y_pred)
-    return y_pred_inversed
 
 
 def main():
@@ -118,9 +109,11 @@ def main():
     pipe = load_pipe("./models/pipeline.pkl")
     mlb = load_mlb("./models/mlb.pkl")
     
-    st.title("Catégoriser automatiquement une question")
+    image = Image.open('logo.jpg')
+    st.image(image, caption='Catégoriser automatiquement une question')
+    st.title("TAG-Me " :orange[colors])
 
-    input_text = st.text_input('Question')
+    input_text = st.text_input('Poser votre question')
 
     formatted_text, final_text = process_text(input_text)
     st.write('Texte formaté : ', formatted_text)
@@ -130,8 +123,11 @@ def main():
 #        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
-        pred_txt = fetch_tag(final_text)
-        st.success(pred_txt, icon="✅")
+        st.success(formatted_text)
+        st.success(final_text)
+        y_pred = pipe.predict(final_text)
+        y_pred_inversed = mlb.inverse_transform(y_pred)
+        st.success(y_pred_inversed, icon="✅")
 
 if __name__ == '__main__':
     main()
