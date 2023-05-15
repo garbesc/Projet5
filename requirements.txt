@@ -3,7 +3,6 @@ mlflow<3,>=2.3
 numpy==1.23.5
 pathlib==1.0.1
 psutil==5.9.0
-sklearn==1.0.2
 scipy==1.9.1
 streamlit==1.22.0
 nltk==3.7
