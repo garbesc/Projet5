@@ -110,8 +110,9 @@ def main():
     mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
-    st.image(image, caption='Catégoriser automatiquement une question', width=50)
+    st.image(image, width=50)
     st.title(":orange[Tag-Me]")
+    st.header("Catégoriser automatiquement une question")
 
     input_text = st.text_input('Poser votre question')
 
@@ -123,7 +124,7 @@ def main():
 #        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
-        st.success(formatted_text)
+        st.success(final_text)
         if final_text != "[()]":
             y_pred = pipe.predict(final_text)
             y_pred_inversed = mlb.inverse_transform(y_pred)
