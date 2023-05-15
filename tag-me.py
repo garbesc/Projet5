@@ -111,7 +111,7 @@ def main():
     
     image = Image.open('logo.jpg')
     st.image(image, caption='Catégoriser automatiquement une question')
-    st.title("TAG-Me " :orange[colors])
+    st.title(":orange[Tag-Me]")
 
     input_text = st.text_input('Poser votre question')
 
