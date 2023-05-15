@@ -124,9 +124,9 @@ def main():
 #        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
-        st.success(final_text)
-        if final_text != "[()]":
-            y_pred = pipe.predict(final_text)
+        y_pred = pipe.predict(final_text)
+        st.success(y_pred)
+        if final_text != "":
             y_pred_inversed = mlb.inverse_transform(y_pred)
             st.success(y_pred_inversed, icon="✅")
         else:
