@@ -125,8 +125,7 @@ def main():
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
         y_pred = pipe.predict(final_text)
-        st.success(y_pred)
-        if final_text != "":
+        if y_pred != np.zeros((1,100)):
             y_pred_inversed = mlb.inverse_transform(y_pred)
             st.success(y_pred_inversed, icon="✅")
         else:
