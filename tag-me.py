@@ -16,6 +16,7 @@ nltk.download('omw-1.4')
 nltk.download('wordnet')
 nltk.download('stopwords')
 nltk.download('words')
+nltk.download('punkt')
 
 def request_prediction(model_uri, data):
     headers = {"Content-Type": "application/json"}
