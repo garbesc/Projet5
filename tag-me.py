@@ -18,6 +18,20 @@ nltk.download('stopwords')
 nltk.download('words')
 nltk.download('punkt')
 
+@st.cache_resource
+# Chargement du Vectorizer 
+def load_pipe(add_pipe):   
+    file_pipe = open(add_pipe, 'rb')
+    pipe = pickle.load(file_pipe)
+    return pipe
+
+@st.cache_resource
+# Chargement du multiLabelBinarizer pré-entrainé
+def load_mlb(add_mlb): 
+    file_mlb = open(add_mlb, 'rb')
+    mlb = pickle.load(file_mlb)
+    return mlb
+
 def request_prediction(model_uri, data):
     headers = {"Content-Type": "application/json"}
 
@@ -30,19 +44,6 @@ def request_prediction(model_uri, data):
             "Request failed with status {}, {}".format(response.status_code, response.text))
 
     return response.json()
-
-# Chargement du Vectorizer 
-def load_vect(add_vect):   
-    file_vect = open(add_vect, 'rb')
-    vect = pickle.load(file_vect)
-    return vect
-
-# Chargement du multiLabelBinarizer pré-entrainé
-def load_mlb(add_mlb): 
-    file_mlb = open(add_mlb, 'rb')
-    mlb = pickle.load(file_mlb)
-    return mlb
-
 # Tokenizer
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -105,7 +106,8 @@ def process_text(text):
     return text_split, final_text
     
 def fetch_tag(text):
-    y_pred_inversed = mlb.inverse_transform(text)
+    y_pred = pipe.predict(X_text)
+    y_pred_inversed = mlb.inverse_transform(y_pred)
     return y_pred_inversed
 
 
@@ -113,8 +115,8 @@ def main():
     MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
 
     # Chargement du vectorizer, multiLablbinarizer
-    #vect = load_vect("./models/vect.pkl")
-#    mlb = load_mlb("./models/mlb.pkl")
+    pipe = load_pipe("./models/pipeline.pkl")
+    mlb = load_mlb("./models/mlb.pkl")
     
     st.title("Catégoriser automatiquement une question")
 
@@ -124,24 +126,11 @@ def main():
     st.write('Texte formaté : ', formatted_text)
 
     if st.button('Rechercher les tags'):
-        arr = np.array([["pyhton"]])
-
-        arr_as_list = arr.tolist()
-        json_data = json.dumps(arr_as_list)
-        st.success(json_data)
-        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
-        st.success(pred)
+#        json_data = json.dumps(final_text.tolist())
+#        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
 #        pred_txt = fetch_tag(pred)
 #        st.success(pred_txt, icon="✅")
-
-#       version locale
-        file_pipe = open("./models/pipeline.pkl", 'rb')
-        file_lbb = open("./models/mlb.pkl", 'rb')
-        pipe = pickle.load(file_pipe)
-        pred = pipe.predict(final_text)
-        
-        lbb = pickle.load(file_lbb)
-        pred_txt = lbb.inverse_transform(pred)
+        pred_txt = fetch_tag(final_text)
         st.success(pred_txt, icon="✅")
 
 if __name__ == '__main__':
