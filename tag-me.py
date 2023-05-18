@@ -13,11 +13,11 @@ from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import words
 
-#nltk.download('omw-1.4')
-#nltk.download('wordnet')
-#nltk.download('words')
-#nltk.download('punkt')
-#nltk.download('stopwords')
+nltk.download('omw-1.4')
+nltk.download('wordnet')
+nltk.download('words')
+nltk.download('punkt')
+nltk.download('stopwords')
 
 #p@st.cache_resource
 #p Chargement du Vectorizer 
