@@ -19,12 +19,12 @@ nltk.download('words')
 nltk.download('punkt')
 nltk.download('stopwords')
 
-@st.cache_resource
-# Chargement du Vectorizer 
-def load_pipe(add_pipe):   
-    file_pipe = open(add_pipe, 'rb')
-    pipe = pickle.load(file_pipe)
-    return pipe
+#p@st.cache_resource
+#p Chargement du Vectorizer 
+#pdef load_pipe(add_pipe):   
+#p    file_pipe = open(add_pipe, 'rb')
+#p    pipe = pickle.load(file_pipe)
+#p    return pipe
 
 @st.cache_resource
 # Chargement du multiLabelBinarizer pré-entrainé
@@ -33,16 +33,15 @@ def load_mlb(add_mlb):
     mlb = pickle.load(file_mlb)
     return mlb
 
-def request_prediction(model_uri, data):
-    headers = {"Content-Type": "application/json"}
+#p    data_json = {'Body': data}
+#p    data_json = {"dataframe_split": dataset.to_dict(orient='split')} if isinstance(dataset, pd.DataFrame) 
+#p    else create_tf_serving_json(dataset)
+#p    response = requests.request(
+#p        method='POST', headers=headers, url=model_uri, json=data_json)
 
-    data_json = {'Body': data}
-    response = requests.request(
-        method='POST', headers=headers, url=model_uri, json=data_json)
-
-    if response.status_code != 200:
-        raise Exception("Request failed with status {}, {}".format(response.status_code, response.text))
-    return response.json()
+#?    if response.status_code != 200:
+#?       raise Exception("Request failed with status {}, {}".format(response.status_code, response.text))
+#?    return response.json()
 
 # Tokenizer
 def tokenizer_fct(sentence) :
@@ -96,15 +95,17 @@ def transform_bow_fct(desc_text) :
 def process_text(text):
     text_prep = transform_bow_fct(text)
     text_split = ["".join(word) for word in text_prep.split(" ")]
-    final_text = [np.array(text_split, dtype='<U41')]
+#p  final_text = [np.array(text_split, dtype='<U41')]
+    final_text = text_prep
     return text_split, final_text
 
 
 def main():
-    MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
+#p    MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
 
-    # Chargement du vectorizer, multiLablbinarizer
-    pipe = load_pipe("./models/pipeline.pkl")
+    # Chargement du multiLablbinarizer pré entrainé
+#    pipe = load_pipe("./models/pipeline.pkl")
+    url = "http://127.0.0.1:8000/"
     mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
@@ -118,14 +119,28 @@ def main():
     st.write('Texte formaté : ', formatted_text)
 
     if st.button('Rechercher les tags'):
-#        json_data = json.dumps(final_text.tolist())
-#        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
-#        pred_txt = fetch_tag(pred)
-#        st.success(pred_txt, icon="✅")
-        y_pred = pipe.predict(final_text)
-        if np.sum(y_pred) != 0:
-            y_pred_inversed = mlb.inverse_transform(y_pred)
-            st.success(y_pred_inversed, icon="✅")
+#p        y_pred = pipe.predict(final_text)
+        sample_request_input = {"Body": final_text}
+        response = requests.get(url, json=sample_request_input)
+
+        rep_str = response.text.replace("{","").replace("result","").replace("}","").replace('"": [',"").replace("]","")
+        rep_arr = np.array([rep_str.split(", ")], dtype='int64')
+
+        if np.sum(rep_arr) > 0:
+            tag_str = mlb.inverse_transform(rep_arr)
+            
+            tag_list = ["".join(["<", tag,">"]) for tag in tag_str[0]]
+            st.success(tag_list, icon="✅")
+
+#p        json_data = json.dumps(final_text.tolist())
+#p        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
+        
+#p        pred_txt = fetch_tag(pred)
+#p        st.success(pred_txt, icon="✅")
+#p        json_data = json.dumps(final_text.tolist())
+#p        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
+#p        pred_txt = fetch_tag(pred)
+#p        st.success(pred_txt, icon="✅")
         else:
             st.error('Tags inexistants', icon="🚨")
 
