@@ -105,7 +105,7 @@ def main():
 
     # Chargement du multiLablbinarizer pré entrainé
 #    pipe = load_pipe("./models/pipeline.pkl")
-    url = "http://127.0.0.1:8000/"
+    url = "http://localhost:8000/"
     mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
