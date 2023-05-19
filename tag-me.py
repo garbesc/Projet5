@@ -98,7 +98,7 @@ def main():
     st.write('Texte formaté : ', formatted_text)
 
     if st.button('Rechercher les tags'):
-        sample_request_input = {"Body": "python"}
+        sample_request_input = {"Body": final_text}
         response = requests.get(url, json=sample_request_input)
 
         rep_str = response.text.replace("{","").replace("result","").replace("}","").replace('"": [',"").replace("]","")
@@ -107,8 +107,8 @@ def main():
         if np.sum(rep_arr) > 0:
             tag_str = mlb.inverse_transform(rep_arr)
             
-            tag_list = ["".join(["<", tag,">"]) for tag in tag_str[0]]
-            st.success(tag_list, icon="✅")
+#            tag_list = ["".join(["<", tag,">"]) for tag in tag_str[0]]
+            st.success(tag_str, icon="✅")
         else:
             st.error('Tags inexistants', icon="🚨")
 
