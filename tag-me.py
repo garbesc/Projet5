@@ -33,16 +33,6 @@ def load_mlb(add_mlb):
     mlb = pickle.load(file_mlb)
     return mlb
 
-#    data_json = {'Body': data}
-#    data_json = {"dataframe_split": dataset.to_dict(orient='split')} if isinstance(dataset, pd.DataFrame) 
-#    else create_tf_serving_json(dataset)
-#    response = requests.request(
-#        method='POST', headers=headers, url=model_uri, json=data_json)
-
-#?    if response.status_code != 200:
-#?       raise Exception("Request failed with status {}, {}".format(response.status_code, response.text))
-#?    return response.json()
-
 # Tokenizer
 def tokenizer_fct(sentence) :
     # print(sentence)
@@ -101,13 +91,8 @@ def process_text(text):
 
 
 def main():
-#p    MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
-
-    # Chargement du multiLablbinarizer pré entrainé
-#    resp=requests.get(BASE_URL+"/"+ENDPOINT)
-
-#    url = "http://127.0.0.1:8000/"
     mlb = load_mlb("./models/mlb.pkl")
+    pipe = load_pipe("./models/pipeline.pkl")
     
     image = Image.open('logo.jpg')
     st.image(image, width=50)
@@ -120,29 +105,10 @@ def main():
     st.write('Texte formaté : ', formatted_text)
 
     if st.button('Rechercher les tags'):
-#        y_pred = pipe.predict(final_text)
-#        sample_request_input = {"Body": 'pyhton"final_text}
-#        sample_request_input = {"Body": "pyhton"}
-#        response = requests.get(BASE_URL+"/"+ENDPOINT, json=sample_request_input)
-
-#        rep_str = response.text.replace("{","").replace("result","").replace("}","").replace('"": [',"").replace("]","")
-#        rep_arr = np.array([rep_str.split(", ")], dtype='int64')
-
-#        if np.sum(rep_arr) > 0:
-#            tag_str = mlb.inverse_transform(rep_arr)
-            
-#            tag_list = ["".join(["<", tag,">"]) for tag in tag_str[0]]
-#            st.success(tag_list, icon="✅")
-
-        json_data = json.dumps(final_text.tolist())
-        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
-        
-        pred_txt = fetch_tag(pred)
-        st.success(pred_txt, icon="✅")
-        json_data = json.dumps(final_text.tolist())
-        pred = request_prediction(MLFLOW_URI, json_data)[0] * 100000
-        pred_txt = fetch_tag(pred)
-        st.success(pred_txt, icon="✅")
+        y_pred = pipe.predict(final_text)
+        if np.sum(y_pred) != 0:
+            y_pred_inversed = mlb.inverse_transform(y_pred)
+            st.success(y_pred_inversed, icon="✅")
         else:
             st.error('Tags inexistants', icon="🚨")
 
