@@ -105,7 +105,11 @@ def main():
 
     # Chargement du multiLablbinarizer pré entrainé
 #    pipe = load_pipe("./models/pipeline.pkl")
-    url = "http://127.0.0.1:8000/"
+    BASE_URL='http://127.0.0.1:8000'
+    ENDPOINT='api/'
+    resp=requests.get(BASE_URL+"/"+ENDPOINT)
+
+#    url = "http://127.0.0.1:8000/"
     mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
@@ -122,7 +126,7 @@ def main():
 #p        y_pred = pipe.predict(final_text)
 #p        sample_request_input = {"Body": 'pyhton"final_text}
         sample_request_input = {"Body": "pyhton"}
-        response = requests.get(url, json=sample_request_input)
+        response = requests.get(BASE_URL+"/"+ENDPOINT, json=sample_request_input)
 
         rep_str = response.text.replace("{","").replace("result","").replace("}","").replace('"": [',"").replace("]","")
         rep_arr = np.array([rep_str.split(", ")], dtype='int64')
