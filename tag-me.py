@@ -15,12 +15,12 @@ from nltk.corpus import words
 
 nltk.download('omw-1.4')
 nltk.download('wordnet')
+nltk.download('stopwords')
 nltk.download('words')
 nltk.download('punkt')
-nltk.download('stopwords')
 
 @st.cache_resource
-# Chargement du Pipeline 
+# Chargement du Vectorizer 
 def load_pipe(add_pipe):   
     file_pipe = open(add_pipe, 'rb')
     pipe = pickle.load(file_pipe)
@@ -32,6 +32,19 @@ def load_mlb(add_mlb):
     file_mlb = open(add_mlb, 'rb')
     mlb = pickle.load(file_mlb)
     return mlb
+
+def request_prediction(model_uri, data):
+    headers = {"Content-Type": "application/json"}
+
+    data_json = {'Body': data}
+    response = requests.request(
+        method='POST', headers=headers, url=model_uri, json=data_json)
+
+    if response.status_code != 200:
+        raise Exception(
+            "Request failed with status {}, {}".format(response.status_code, response.text))
+
+    return response.json()
 
 # Tokenizer
 def tokenizer_fct(sentence) :
@@ -86,13 +99,15 @@ def process_text(text):
     text_prep = transform_bow_fct(text)
     text_split = ["".join(word) for word in text_prep.split(" ")]
     final_text = [np.array(text_split, dtype='<U41')]
-    final_text = text_prep
     return text_split, final_text
 
 
 def main():
-    mlb = load_mlb("./models/mlb.pkl")
+    MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
+
+    # Chargement du vectorizer, multiLablbinarizer
     pipe = load_pipe("./models/pipeline.pkl")
+    mlb = load_mlb("./models/mlb.pkl")
     
     image = Image.open('logo.jpg')
     st.image(image, width=50)
