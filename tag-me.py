@@ -120,7 +120,7 @@ def main():
     st.write('Texte formaté : ', formatted_text)
 
     if st.button('Rechercher les tags'):
-        y_pred = pipe.predict(final_text)
+#        y_pred = pipe.predict(final_text)
 #        sample_request_input = {"Body": 'pyhton"final_text}
 #        sample_request_input = {"Body": "pyhton"}
 #        response = requests.get(BASE_URL+"/"+ENDPOINT, json=sample_request_input)
