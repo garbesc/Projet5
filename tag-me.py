@@ -106,7 +106,7 @@ def main():
 
     if st.button('Rechercher les tags'):
         y_pred = pipe.predict(final_text)
-        if np.sum(y_pred) != 0:
+        if final_text != "":
             y_pred_inversed = mlb.inverse_transform(y_pred)
             st.success(y_pred_inversed, icon="✅")
         else:
